@@ -1,3 +1,18 @@
+# Dependencies
 node_modules/
-preview/
+
+# Build output
 *.vsix
+preview/
+
+# Logs
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor (keep the shared launch config)
+.vscode/*
+!.vscode/launch.json
