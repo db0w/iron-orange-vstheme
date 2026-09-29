@@ -4,12 +4,22 @@
   "description": "Metallic orange theme: copper and mandarin surfaces, orange bars and high-contrast text, even on selections. Dark and Light variants.",
   "version": "0.1.0",
   "publisher": "db0w",
+  "author": "db0w",
   "license": "MIT",
+  "pricing": "Free",
   "icon": "images/icon.png",
   "galleryBanner": {
     "color": "#5C2E0E",
     "theme": "dark"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/db0w/iron-orange-vstheme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/db0w/iron-orange-vstheme/issues"
+  },
+  "homepage": "https://github.com/db0w/iron-orange-vstheme#readme",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -47,8 +57,9 @@
     "icon": "node scripts/icon.mjs",
     "preview": "node scripts/preview.mjs",
     "vscode:prepublish": "npm run build && npm run check",
-    "package": "vsce package --allow-missing-repository",
-    "publish": "vsce publish"
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "screenshots": "node scripts/preview.mjs --readme"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",

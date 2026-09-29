@@ -1,5 +1,6 @@
 // Renders a mock VS Code window for each generated theme to preview/*.png,
 // so palette tweaks can be judged without launching VS Code.
+// With --readme it renders the README screenshots instead: images/screenshots/{dark,light}.png at 2x.
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +8,8 @@ import { Resvg } from '@resvg/resvg-js';
 import { palettes } from '../src/palettes.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const outDir = join(root, 'preview');
+const forReadme = process.argv.includes('--readme');
+const outDir = forReadme ? join(root, 'images', 'screenshots') : join(root, 'preview');
 mkdirSync(outDir, { recursive: true });
 
 const W = 1280;
@@ -48,8 +50,11 @@ const CODE = [
   [['variable', '  '], ['punctuation', '}']],
   [['punctuation', '}']],
 ];
-const CURSOR_LINE = 11; // 0-based index of "async forge(...)"
-const SELECTION = { line: 11, from: 8, to: 13 }; // "forge"
+const CURSOR = { line: 11, col: 13 }; // after "forge" in "async forge(...)"
+// Multi-line selection over the comment, the decorator and the class line (0-based lines, columns).
+const SELECTION = [[2, 0, 45], [3, 0, 8], [4, 0, 58]];
+const FIND_MATCH = { line: 13, from: 23, to: 31 }; // "readFile" in the readFile(...) call
+const FIND_HIGHLIGHT = { line: 0, from: 9, to: 17 }; // the other "readFile"
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/ /g, '\u00A0');
 
@@ -139,9 +144,13 @@ function render(theme, palette) {
   const codeX = editorX + GUTTER_W + 12;
   CODE.forEach((segments, i) => {
     const y = editorY + 6 + i * LINE_H;
-    if (i === CURSOR_LINE) rect(editorX, y, W - editorX, LINE_H, c('editor.lineHighlightBackground'));
-    if (i === SELECTION.line) rect(codeX + SELECTION.from * CHAR_W, y + 1, (SELECTION.to - SELECTION.from) * CHAR_W, LINE_H - 2, c('editor.selectionBackground'), 'rx="3"');
-    text(editorX + GUTTER_W - 8, y + 16, String(i + 1), i === CURSOR_LINE ? c('editorLineNumber.activeForeground') : c('editorLineNumber.foreground'), { family: MONO, size: FONT, anchor: 'end' });
+    if (i === CURSOR.line) rect(editorX, y, W - editorX, LINE_H, c('editor.lineHighlightBackground'));
+    for (const [line, from, to] of SELECTION) {
+      if (line === i) rect(codeX + from * CHAR_W, y, (to - from) * CHAR_W, LINE_H, c('editor.selectionBackground'));
+    }
+    if (i === FIND_HIGHLIGHT.line) rect(codeX + FIND_HIGHLIGHT.from * CHAR_W, y + 1, (FIND_HIGHLIGHT.to - FIND_HIGHLIGHT.from) * CHAR_W, LINE_H - 2, c('editor.findMatchHighlightBackground'), 'rx="2"');
+    if (i === FIND_MATCH.line) rect(codeX + FIND_MATCH.from * CHAR_W, y + 1, (FIND_MATCH.to - FIND_MATCH.from) * CHAR_W, LINE_H - 2, c('editor.findMatchBackground'), `rx="2" stroke="${c('editor.findMatchBorder')}"`);
+    text(editorX + GUTTER_W - 8, y + 16, String(i + 1), i === CURSOR.line ? c('editorLineNumber.activeForeground') : c('editorLineNumber.foreground'), { family: MONO, size: FONT, anchor: 'end' });
     const spans = segments
       .map(([role, str]) => {
         const italic = role === 'this' || role === 'comment' || role === 'parameter';
@@ -150,7 +159,7 @@ function render(theme, palette) {
       })
       .join('');
     if (spans) out.push(`<text x="${codeX}" y="${y + 16}" font-family="${MONO}" font-size="${FONT}">${spans}</text>`);
-    if (i === CURSOR_LINE) rect(codeX + SELECTION.to * CHAR_W, y + 2, 2, LINE_H - 4, c('editorCursor.foreground'));
+    if (i === CURSOR.line) rect(codeX + CURSOR.col * CHAR_W, y + 2, 2, LINE_H - 4, c('editorCursor.foreground'));
   });
   // Indent guides
   for (const [from, to] of [[5, 16], [8, 9], [12, 15]]) {
@@ -159,11 +168,11 @@ function render(theme, palette) {
   }
 
   // Hover widget
-  const hx = codeX + 20 * CHAR_W;
+  const hx = codeX + 40 * CHAR_W; // anchored to "Error" on line 13
   const hy = editorY + 6 + 12 * LINE_H + 26;
   rect(hx, hy, 380, 56, c('editorHoverWidget.background'), `rx="4" stroke="${c('editorHoverWidget.border')}"`);
-  out.push(`<text x="${hx + 12}" y="${hy + 22}" font-family="${MONO}" font-size="13"><tspan fill="${s.keyword}">const </tspan><tspan fill="${s.variable}">MELTING_POINT</tspan><tspan fill="${s.punctuation}">: </tspan><tspan fill="${s.number}">1538</tspan></text>`);
-  text(hx + 12, hy + 44, 'Iron melting point in °C.', c('editorHoverWidget.foreground'), { size: 12 });
+  out.push(`<text x="${hx + 12}" y="${hy + 22}" font-family="${MONO}" font-size="13"><tspan fill="${s.keyword}">var </tspan><tspan fill="${s.variable}">Error</tspan><tspan fill="${s.punctuation}">: </tspan><tspan fill="${s.type}">ErrorConstructor</tspan></text>`);
+  text(hx + 12, hy + 44, 'Creates a new Error object.', c('editorHoverWidget.foreground'), { size: 12 });
 
   // Panel with terminal
   rect(editorX, panelY, W - editorX, PANEL_H, c('panel.background'));
@@ -175,7 +184,7 @@ function render(theme, palette) {
   });
   const term = [
     [['ansiBrightBlack', 'PS D:\\iron_orange> '], ['foreground', 'npm run check']],
-    [['ansiGreen', '  ✔ editor text                    ECE6DF on 1C1F24   13.38:1']],
+    [['ansiGreen', '  ✔ All contrast checks passed']],
     [['ansiYellow', '  ⚠ 2 warnings  '], ['ansiRed', '✘ 0 errors  '], ['ansiBlue', 'info '], ['ansiMagenta', 'debug '], ['ansiCyan', 'trace']],
     [['ansiBrightBlack', 'PS D:\\iron_orange> '], ['foreground', 'git status --short']],
     [['ansiRed', ' M src/palettes.mjs  '], ['ansiGreen', '?? themes/']],
@@ -204,8 +213,12 @@ for (const file of readdirSync(join(root, 'themes')).filter((f) => f.endsWith('.
   const theme = JSON.parse(readFileSync(join(root, 'themes', file), 'utf8'));
   const palette = palettes.find((p) => p.name === theme.name);
   const svg = render(theme, palette);
-  const png = new Resvg(svg, { font: { loadSystemFonts: true, defaultFontFamily: 'Segoe UI' } }).render().asPng();
-  const out = join(outDir, file.replace('-color-theme.json', '.png'));
+  const png = new Resvg(svg, {
+    font: { loadSystemFonts: true, defaultFontFamily: 'Segoe UI' },
+    ...(forReadme && { fitTo: { mode: 'zoom', value: 2 } }),
+  }).render().asPng();
+  const name = forReadme ? `${palette.type}.png` : file.replace('-color-theme.json', '.png');
+  const out = join(outDir, name);
   writeFileSync(out, png);
   console.log(`✔ ${out}`);
 }
