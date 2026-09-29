@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter');
+
+:root {
+  --copper: #ff8a3d;
+  --gunmetal: #1c1f24;
+}
+
+@media (prefers-color-scheme: dark) {
+  .plate > .nut:hover,
+  #furnace::after {
+    color: var(--copper);
+    background: linear-gradient(135deg, rgba(255, 138, 61, 0.8) 0%, #d9661f 100%);
+    border: 2px solid currentColor;
+    transition: transform 150ms ease-in-out !important;
+  }
+}

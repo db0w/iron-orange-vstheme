@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Preview Iron Orange",
+      "type": "extensionHost",
+      "request": "launch",
+      "preLaunchTask": "npm: build",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "${workspaceFolder}/samples"
+      ]
+    }
+  ]
+}

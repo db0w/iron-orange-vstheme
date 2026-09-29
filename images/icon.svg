@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#343A42"/>
+      <stop offset="0.5" stop-color="#1F2227"/>
+      <stop offset="1" stop-color="#121417"/>
+    </linearGradient>
+    <linearGradient id="copper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFD9B5"/>
+      <stop offset="0.22" stop-color="#FF9A55"/>
+      <stop offset="0.5" stop-color="#C8581A"/>
+      <stop offset="0.72" stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#7A3510"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE8D2"/>
+      <stop offset="1" stop-color="#7A3510"/>
+    </linearGradient>
+    <radialGradient id="bore" cx="0.42" cy="0.38" r="0.7">
+      <stop offset="0" stop-color="#2A2E35"/>
+      <stop offset="1" stop-color="#0E1013"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#plate)"/>
+  <rect x="9" y="9" width="238" height="238" rx="51" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="2"/>
+
+  <!-- Copper hex nut -->
+  <polygon points="214,128 171,202.5 85,202.5 42,128 85,53.5 171,53.5"
+           fill="url(#copper)" stroke="url(#rim)" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="128" cy="128" r="60" fill="none" stroke="#FFE8D2" stroke-opacity="0.35" stroke-width="3"/>
+  <circle cx="128" cy="128" r="38" fill="url(#bore)" stroke="#7A3510" stroke-width="5"/>
+  <path d="M100 112 A 34 34 0 0 1 128 94" fill="none" stroke="#FFB27A" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"/>
+</svg>

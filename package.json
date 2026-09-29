@@ -1,0 +1,57 @@
+{
+  "name": "iron-orange",
+  "displayName": "Iron Orange",
+  "description": "Metallic orange theme: copper and mandarin surfaces, orange bars and high-contrast text, even on selections. Dark and Light variants.",
+  "version": "0.1.0",
+  "publisher": "db0w",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#5C2E0E",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "theme",
+    "color theme",
+    "orange",
+    "copper",
+    "metallic",
+    "rust",
+    "dark",
+    "light",
+    "high contrast"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Iron Orange Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/iron-orange-dark-color-theme.json"
+      },
+      {
+        "label": "Iron Orange Light",
+        "uiTheme": "vs",
+        "path": "./themes/iron-orange-light-color-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/contrast.mjs",
+    "icon": "node scripts/icon.mjs",
+    "preview": "node scripts/preview.mjs",
+    "vscode:prepublish": "npm run build && npm run check",
+    "package": "vsce package --allow-missing-repository",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@vscode/vsce": "^4.0.0"
+  }
+}

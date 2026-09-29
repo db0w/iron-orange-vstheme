@@ -1,0 +1,12 @@
+{
+  "name": "Iron Orange ores",
+  "version": 1,
+  "ores": [
+    { "symbol": "Fe", "purity": 0.98, "magnetic": true, "notes": null },
+    { "symbol": "Cu", "purity": 0.95, "magnetic": false, "finish": ["brushed", "polished"] }
+  ],
+  "furnace": {
+    "capacity": 500,
+    "temperature": { "min": 1200, "max": 1600 }
+  }
+}
